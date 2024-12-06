@@ -123,6 +123,7 @@
             //window.navigator.msSaveOrOpenBlob(blob, "test.csv");// msSaveOrOpenBlobの場合はファイルを保存せずに開ける
         } else {
             document.getElementById("download").href = window.URL.createObjectURL(blob);
+            document.getElementById("download").download = "stops.csv";
         }
 
         delete data_csv;//data_csvオブジェクトはもういらないので消去してメモリを開放
