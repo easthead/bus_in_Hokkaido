@@ -21,6 +21,7 @@
   <div id="map"></div>
   <div style="padding-top: 10px;">
     <h5>↓入力フィールド</h5>
+    <input name="table1_cell_value" id="company_id" type="text" placeholder="バス事業者ID">
     <input name="table1_cell_value" id="stop_name" type="text" placeholder="バス停名">
     <input name="table1_cell_value" id="lat" type="text" placeholder="緯度">
     <input name="table1_cell_value" id="lon" type="text" placeholder="経度">
@@ -33,10 +34,10 @@
   </ul> -->
   <table id="table1"  border="1" cellpadding="10">
     <tr>
-        <th>stop id</th>
-        <th>stop name</th>
-        <th>latitude</th>
-        <th>longitude</th>
+        <th>stop_id</th>
+        <th>stop_name</th>
+        <th>lat</th>
+        <th>lon</th>
     </tr>
   </table>
   <script>
@@ -59,7 +60,7 @@
       
       // 座標を表示
       document.getElementById('lat').value = lat_lng.lat();
-      document.getElementById('lng').value = lat_lng.lng();
+      document.getElementById('lon').value = lat_lng.lng();
 
       // マーカーを設置
       var marker = new google.maps.Marker({
@@ -83,7 +84,7 @@
         var row = table.insertRow(-1);//id=table1の中にtrタグを最後の子要素として追加
         // 1列目：連番のID
         var idCell = row.insertCell(0);
-        idCell.innerText = rowCount++;
+        idCell.innerText = document.getElementById('company_id').value + rowCount++;
 
         // 2列目：バス停名
         var stopNameCell = row.insertCell(1);
@@ -117,7 +118,7 @@
 
         var blob = new Blob([ bom, data_csv], { "type" : "text/csv" });//data_csvのデータをcsvとしてダウンロードする関数
         if (window.navigator.msSaveBlob) { //IEの場合の処理
-            window.navigator.msSaveBlob(blob, "test.csv"); 
+            window.navigator.msSaveBlob(blob, "stops.csv"); 
             //window.navigator.msSaveOrOpenBlob(blob, "test.csv");// msSaveOrOpenBlobの場合はファイルを保存せずに開ける
         } else {
             document.getElementById("download").href = window.URL.createObjectURL(blob);
