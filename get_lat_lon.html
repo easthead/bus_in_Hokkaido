@@ -84,7 +84,8 @@
         var row = table.insertRow(-1);//id=table1の中にtrタグを最後の子要素として追加
         // 1列目：連番のID
         var idCell = row.insertCell(0);
-        idCell.innerText = document.getElementById('company_id').value + rowCount++;
+        rowCount++;
+        idCell.innerText = document.getElementById('company_id').value + rowCount.toString().padStart(6, '0');
 
         // 2列目：バス停名
         var stopNameCell = row.insertCell(1);
