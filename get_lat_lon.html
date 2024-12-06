@@ -40,6 +40,7 @@
     </tr>
   </table>
   <script>
+    rowCount = 0
     function initMap() {
 
       // マップの初期化
@@ -57,8 +58,8 @@
     function getClickLatLng(lat_lng, map) {
       
       // 座標を表示
-      document.getElementById('lat').textContent = lat_lng.lat();
-      document.getElementById('lng').textContent = lat_lng.lng();
+      document.getElementById('lat').value = lat_lng.lat();
+      document.getElementById('lng').value = lat_lng.lng();
 
       // マーカーを設置
       var marker = new google.maps.Marker({
@@ -80,12 +81,26 @@
         }
         var table = document.getElementById('table1');//id=table1という要素を取得
         var row = table.insertRow(-1);//id=table1の中にtrタグを最後の子要素として追加
-        var cells = new Array();
-        for(var i = 0; i < table.rows[0].cells.length; i++){
-            cells[i] = row.insertCell(-1);//新しく作ったrowの中にtrタグを最後の子要素として追加
-            cells[i].innerText=document.getElementsByName("table1_cell_value")[i].value;
-            document.getElementsByName("table1_cell_value")[i].value="";//入力フィールドの初期化
-        }
+        // 1列目：連番のID
+        var idCell = row.insertCell(0);
+        idCell.innerText = rowCount++;
+
+        // 2列目：バス停名
+        var stopNameCell = row.insertCell(1);
+        stopNameCell.innerText = document.getElementById('stop_name').value;
+
+        // 3列目：緯度
+        var latCell = row.insertCell(2);
+        latCell.innerText = document.getElementById('lat').value;
+
+        // 4列目：経度
+        var lonCell = row.insertCell(3);
+        lonCell.innerText = document.getElementById('lon').value;
+
+        // 入力フィールドをリセット
+        document.getElementById('stop_name').value = "";
+        document.getElementById('lat').value = "";
+        document.getElementById('lon').value = "";
     }
     function handleDownload() {
         var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);//文字コードをBOM付きUTF-8に指定
