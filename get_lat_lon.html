@@ -117,7 +117,7 @@
           }
         }
 
-        var blob = new Blob([ bom, data_csv], { "type" : "text/csv" });//data_csvのデータをcsvとしてダウンロードする関数
+        var blob = new Blob([ bom, data_csv], { "type" : "stops/csv" });//data_csvのデータをcsvとしてダウンロードする関数
         if (window.navigator.msSaveBlob) { //IEの場合の処理
             window.navigator.msSaveBlob(blob, "stops.csv"); 
             //window.navigator.msSaveOrOpenBlob(blob, "test.csv");// msSaveOrOpenBlobの場合はファイルを保存せずに開ける
