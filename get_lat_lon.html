@@ -142,10 +142,10 @@
         result = event.target.result;
         // CSVデータを整形
         result = result.split('\n');
+        result.shift()
+        result.pop()
         // CSVデータを出力
-        var i = 0;
         result.forEach((item) => {
-          if (i != 0){
           item = item.split(',')
           // CSVデータをpタグで表示
           var table = document.getElementById('table1');//id=table1という要素を取得
@@ -166,8 +166,6 @@
           // 4列目：経度
           var lonCell = row.insertCell(3);
           lonCell.innerText = item[3];
-          }
-          i += 1;
         })
       };
     });
