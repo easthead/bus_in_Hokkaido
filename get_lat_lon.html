@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <title>Test Map</title>
+  <title>Get Latitude and Longitude</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
   <meta charset="utf-8">
@@ -19,6 +19,7 @@
 </head>
 <body>
   <div id="map"></div>
+  <input type="file" name="csv_import" accept="csv" id="upload-file">
   <div style="padding-top: 10px;">
     <h5>↓入力フィールド</h5>
     <input name="table1_cell_value" id="company_id" type="text" placeholder="バス事業者ID">
@@ -27,7 +28,7 @@
     <input name="table1_cell_value" id="lon" type="text" placeholder="経度">
     <input type="button" value="行を追加" onclick="add_line()">
     <b><a id="download" href="#" download="test.csv" onclick="handleDownload()">csvファイルダウンロード</a></b>
-</div>
+  </div>
   <!-- <ul>
     <li>lat: <span id="lat"></span></li>
     <li>lng: <span id="lng"></span></li>
@@ -104,6 +105,7 @@
         document.getElementById('lat').value = "";
         document.getElementById('lon').value = "";
     }
+
     function handleDownload() {
         var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);//文字コードをBOM付きUTF-8に指定
         var table = document.getElementById('table1');//id=table1という要素を取得
@@ -128,6 +130,47 @@
 
         delete data_csv;//data_csvオブジェクトはもういらないので消去してメモリを開放
     }
+    const input = document.getElementById('upload-file');
+    // NOTE: uploadされたら検知する
+    input.addEventListener('change', (e) => {
+      const reader = new FileReader();
+      // NOTE: fileを文字列として読み込む
+      reader.readAsText(e.target.files[0]);
+      const csv_data = document.getElementById("csv_data");
+
+      reader.onload = function(event) {
+        result = event.target.result;
+        // CSVデータを整形
+        result = result.split('\n');
+        // CSVデータを出力
+        var i = 0;
+        result.forEach((item) => {
+          if (i != 0){
+          item = item.split(',')
+          // CSVデータをpタグで表示
+          var table = document.getElementById('table1');//id=table1という要素を取得
+          var row = table.insertRow(-1);//id=table1の中にtrタグを最後の子要素として追加
+          // 1列目：連番のID
+          var idCell = row.insertCell(0);
+          rowCount++;
+          idCell.innerText = item[0];
+
+          // 2列目：バス停名
+          var stopNameCell = row.insertCell(1);
+          stopNameCell.innerText = item[1];
+
+          // 3列目：緯度
+          var latCell = row.insertCell(2);
+          latCell.innerText = item[2];
+
+          // 4列目：経度
+          var lonCell = row.insertCell(3);
+          lonCell.innerText = item[3];
+          }
+          i += 1;
+        })
+      };
+    });
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?signed_in=true&callback=initMap" async defer></script>
 </body>
