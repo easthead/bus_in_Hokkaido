@@ -70,6 +70,55 @@
       });
     }
 
+    const input = document.getElementById('upload-file');
+    // NOTE: uploadされたら検知する
+    input.addEventListener('change', (e) => {
+      const reader = new FileReader();
+      // NOTE: fileを文字列として読み込む
+      reader.readAsText(e.target.files[0]);
+      const csv_data = document.getElementById("csv_data");
+
+      reader.onload = function(event) {
+        result = event.target.result;
+        // CSVデータを整形
+        result = result.split('\n');
+        result.shift()
+        result.pop()
+        // CSVデータを出力
+        result.forEach((item) => {
+          item = item.split(',')
+          // CSVデータをpタグで表示
+          var table = document.getElementById('table1');//id=table1という要素を取得
+          var row = table.insertRow(-1);//id=table1の中にtrタグを最後の子要素として追加
+          // 1列目：連番のID
+          var idCell = row.insertCell(0);
+          rowCount++;
+          idCell.innerText = item[0];
+
+          // 2列目：バス停名
+          var stopNameCell = row.insertCell(1);
+          stopNameCell.innerText = item[1];
+
+          // 3列目：緯度
+          var latCell = row.insertCell(2);
+          latCell.innerText = item[2];
+
+          // 4列目：経度
+          var lonCell = row.insertCell(3);
+          lonCell.innerText = item[3];
+          
+          plotMarkers(Number(latCell.innerText), Number(lonCell.innerText));
+        })
+      };
+    });
+
+    function plotMarkers(lat, lng) {
+                    new google.maps.Marker({
+                        position: { lat, lng },
+                        map: map,
+                    });
+                }
+
     function add_line() {
         for(var i = 0; i < document.getElementsByName("table1_cell_value").length; i++){
             if(document.getElementsByName("table1_cell_value")[i].value ==""){
@@ -127,53 +176,6 @@
         delete data_csv;//data_csvオブジェクトはもういらないので消去してメモリを開放
     }
 
-    const input = document.getElementById('upload-file');
-    // NOTE: uploadされたら検知する
-    input.addEventListener('change', (e) => {
-      const reader = new FileReader();
-      // NOTE: fileを文字列として読み込む
-      reader.readAsText(e.target.files[0]);
-      const csv_data = document.getElementById("csv_data");
-
-      reader.onload = function(event) {
-        initMap()
-        result = event.target.result;
-        // CSVデータを整形
-        result = result.split('\n');
-        result.shift()
-        result.pop()
-        // CSVデータを出力
-        result.forEach((item) => {
-          item = item.split(',')
-          // CSVデータをpタグで表示
-          var table = document.getElementById('table1');//id=table1という要素を取得
-          var row = table.insertRow(-1);//id=table1の中にtrタグを最後の子要素として追加
-          // 1列目：連番のID
-          var idCell = row.insertCell(0);
-          rowCount++;
-          idCell.innerText = item[0];
-
-          // 2列目：バス停名
-          var stopNameCell = row.insertCell(1);
-          stopNameCell.innerText = item[1];
-
-          // 3列目：緯度
-          var latCell = row.insertCell(2);
-          latCell.innerText = item[2];
-
-          // 4列目：経度
-          var lonCell = row.insertCell(3);
-          lonCell.innerText = item[3];
-          
-          // マーカーを設置
-          var markerLatLng = new google.maps.LatLng({lat: latCell.innerText, lng: lonCell.innerText});
-          var marker = new google.maps.Marker({
-            position: markerLatLng,
-            map: map
-          });
-        })
-      };
-    });
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?signed_in=true&callback=initMap" async defer></script>
 </body>
