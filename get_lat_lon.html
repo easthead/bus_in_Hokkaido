@@ -42,19 +42,16 @@
   </table>
   <script>
     rowCount = 0
-    function initMap() {
+    // マップの初期化
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 13,
+      center: {lat: 43.0, lng: 141.3}
+    });
 
-      // マップの初期化
-      var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 13,
-        center: {lat: 43.0, lng: 141.3}
-      });
-
-      // クリックイベントを追加
-      map.addListener('click', function(e) {
-        getClickLatLng(e.latLng, map);
-      });
-    }
+    // クリックイベントを追加
+    map.addListener('click', function(e) {
+      getClickLatLng(e.latLng, map);
+    });
 
     function getClickLatLng(lat_lng, map) {
       
@@ -129,10 +126,6 @@
     const input = document.getElementById('upload-file');
     // NOTE: uploadされたら検知する
     input.addEventListener('change', (e) => {
-      var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 13,
-        center: {lat: 43.0, lng: 141.3}
-      });
       const reader = new FileReader();
       // NOTE: fileを文字列として読み込む
       reader.readAsText(e.target.files[0]);
