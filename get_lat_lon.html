@@ -42,16 +42,20 @@
   </table>
   <script>
     rowCount = 0
-    // マップの初期化
-    var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 13,
-      center: {lat: 43.0, lng: 141.3}
-    });
+    var map;
+    function initMap() {
 
-    // クリックイベントを追加
-    map.addListener('click', function(e) {
-      getClickLatLng(e.latLng, map);
-    });
+      // マップの初期化
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 13,
+        center: {lat: 43.0, lng: 141.3}
+      });
+
+      // クリックイベントを追加
+      map.addListener('click', function(e) {
+        getClickLatLng(e.latLng, map);
+      });
+    }
 
     function getClickLatLng(lat_lng, map) {
       
