@@ -136,6 +136,7 @@
       const csv_data = document.getElementById("csv_data");
 
       reader.onload = function(event) {
+        initMap()
         result = event.target.result;
         // CSVデータを整形
         result = result.split('\n');
