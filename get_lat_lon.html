@@ -21,7 +21,6 @@
   <div id="map"></div>
   <input type="file" name="csv_import" accept="csv" id="upload-file">
   <div style="padding-top: 10px;">
-    <h5>↓入力フィールド</h5>
     <input name="table1_cell_value" id="company_id" type="text" placeholder="バス事業者ID">
     <input name="table1_cell_value" id="stop_name" type="text" placeholder="バス停名">
     <input name="table1_cell_value" id="lat" type="text" placeholder="緯度">
@@ -130,6 +129,10 @@
     const input = document.getElementById('upload-file');
     // NOTE: uploadされたら検知する
     input.addEventListener('change', (e) => {
+      var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 13,
+        center: {lat: 43.0, lng: 141.3}
+      });
       const reader = new FileReader();
       // NOTE: fileを文字列として読み込む
       reader.readAsText(e.target.files[0]);
