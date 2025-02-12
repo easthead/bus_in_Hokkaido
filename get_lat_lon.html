@@ -68,10 +68,6 @@
         position: lat_lng,
         map: map
       });
-
-      // 座標の中心をずらす
-      // http://syncer.jp/google-maps-javascript-api-matome/map/method/panTo/
-    //   map.panTo(lat_lng);
     }
 
     function add_line() {
@@ -130,6 +126,7 @@
 
         delete data_csv;//data_csvオブジェクトはもういらないので消去してメモリを開放
     }
+
     const input = document.getElementById('upload-file');
     // NOTE: uploadされたら検知する
     input.addEventListener('change', (e) => {
@@ -166,6 +163,13 @@
           // 4列目：経度
           var lonCell = row.insertCell(3);
           lonCell.innerText = item[3];
+          
+          // マーカーを設置
+          var markerLatLng = new google.maps.LatLng({lat: latCell.innerText, lng: lonCell.innerText});
+          var marker = new google.maps.Marker({
+            position: markerLatLng,
+            map: map
+          });
         })
       };
     });
