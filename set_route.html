@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title>Set Route</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    #map {
+      height: 80%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <input type="file" name="csv_import" accept="csv" id="upload-file">
+  <div style="padding-top: 10px;">
+    <input name="table1_cell_value" id="route_name" type="text" placeholder="路線名">
+    <input type="button" value="経路を保存" onclick="save_route()">
+    <input name="company_name" id="company_name" type="text" placeholder="バス事業者名">
+    <b><a id="download" href="#" download="test.csv" onclick="handleDownload()">csvファイルダウンロード</a></b>
+  </div>
+  <div id="tmp">
+    <p id="stops_list"></p>
+  </div>
+  <table id="table1"  border="1" cellpadding="10">
+    <tr>
+        <th>route_name</th>
+        <th>origin</th>
+        <th>end</th>
+        <th>stops</th>
+    </tr>
+  </table>
+  <script>
+    var markers = [];
+    var infoWindow = [];
+    var stopIds = [];
+    var stopNames = [];
+    var routes = [];
+    route_num = 0;
+    routes[route_num] = [];
+    var map;
+    var inputText;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 13,
+        center: {lat: 43.1, lng: 141.3}
+      });
+    }
+
+    document.getElementById("company_name").addEventListener("input", function() {
+            inputText = this.value;
+        });
+
+    const input = document.getElementById('upload-file');
+    // NOTE: uploadされたら検知する
+    input.addEventListener('change', (e) => {
+      const reader = new FileReader();
+      // NOTE: fileを文字列として読み込む
+      reader.readAsText(e.target.files[0]);
+      const csv_data = document.getElementById("csv_data");
+
+      reader.onload = function(event) {
+        result = event.target.result;
+        // CSVデータを整形
+        result = result.split('\n');
+        result.shift();
+        result.pop();
+        // CSVデータを出力
+        result.forEach((item, i) => {
+          item = item.split(',')
+          stopIds.push(item[0]);
+          stopNames.push(item[1]);
+          plotMarkers(item[1], Number(item[2]), Number(item[3]), i);
+        })
+      };
+    });
+
+    function plotMarkers(stop_name, lat, lng, i) {
+        markers[i] = new google.maps.Marker({
+            position: { lat, lng },
+            map: map,
+        });
+        infoWindow[i] = new google.maps.InfoWindow({ // 吹き出しの追加
+            content: '<div class="sample">' + stop_name + '</div>' // 吹き出しに表示する内容
+        });
+        markerEvent(i);
+    }
+
+    function markerEvent(i) {
+        markers[i].addListener('mouseover', function() { // マーカーにかざしたとき
+            infoWindow[i].open(map, markers[i]); // 吹き出しの表示
+        });
+        markers[i].addListener('mouseout', function() { // マーカーから離したとき
+            infoWindow[i].close(map, markers[i]); // 吹き出しの非表示
+        });
+        markers[i].addListener('click', function() {
+            var addText = stopNames[i] + '</br>';
+            document.getElementById("stops_list").innerHTML += addText;
+            routes[route_num].push(stopIds[i]);
+        });
+    }
+
+    function save_route() {
+        for(var i = 0; i < document.getElementsByName("table1_cell_value").length; i++){
+            if(document.getElementsByName("table1_cell_value")[i].value ==""){
+                alert("未入力項目があります。");
+                return false;
+            }
+        }
+        var table = document.getElementById('table1');//id=table1という要素を取得
+        var row = table.insertRow(-1);//id=table1の中にtrタグを最後の子要素として追加
+
+        // 1列目：路線名
+        var stopNameCell = row.insertCell(0);
+        stopNameCell.innerText = document.getElementById('route_name').value;
+
+        // 2列目：始点
+        var latCell = row.insertCell(1);
+        latCell.innerText = routes[route_num][0];
+
+        // 3列目：終点
+        var lonCell = row.insertCell(2);
+        lonCell.innerText = routes[route_num][routes[route_num].length-1];
+
+        // 4列目：バス停の数
+        var stopsCell = row.insertCell(3);
+        stopsCell.innerText = routes[route_num].length;
+
+        // 入力フィールドをリセット
+        document.getElementById('route_name').value = "";
+        document.getElementById('stops_list').innerHTML = "";
+        route_num ++;
+        routes[route_num] = [];
+    }
+
+    function handleDownload() {
+        var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);//文字コードをBOM付きUTF-8に指定
+        var table = document.getElementById('table1');//id=table1という要素を取得
+        var data_csv="pass_id,company_name,stop_id1,stop_id2,route_name\n";//ここに文字データとして値を格納していく
+        var n = 0;
+
+        for(var i = 0;  i < table.rows.length-1; i++){
+            for(var j = 0; j < routes[i].length-1; j++) {
+                path = String(n) + ',' + inputText + ',' + routes[i][j] + ',' + routes[i][j+1] + ',' + table.rows[i+1].cells[0].innerText + '\n';
+                n += 1;
+                data_csv += path;
+            }
+        }
+
+        var blob = new Blob([ bom, data_csv], { "type" : "text/csv" });//data_csvのデータをcsvとしてダウンロードする関数
+        if (window.navigator.msSaveBlob) { //IEの場合の処理
+            window.navigator.msSaveBlob(blob, "routes.csv"); 
+            //window.navigator.msSaveOrOpenBlob(blob, "test.csv");// msSaveOrOpenBlobの場合はファイルを保存せずに開ける
+        } else {
+            document.getElementById("download").href = window.URL.createObjectURL(blob);
+            document.getElementById("download").download = "routes.csv";
+        }
+
+        delete data_csv;//data_csvオブジェクトはもういらないので消去してメモリを開放
+    }
+
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?signed_in=true&callback=initMap" async defer></script>
+</body>
+</html>
+
